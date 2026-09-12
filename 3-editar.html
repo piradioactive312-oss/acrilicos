@@ -280,7 +280,11 @@
         filter: p.filter || 'Normal',
       });
     });
-    AC.setCart(cart);
+
+    if (!AC.setCart(cart)) {
+      alert('Não foi possível salvar seu carrinho: o armazenamento do navegador está cheio. Tente remover alguma foto e enviar novamente.');
+      return;
+    }
     AC.clearQueue();
     AC.goto('4-carrinho.html');
   });
