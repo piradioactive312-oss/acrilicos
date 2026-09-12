@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamento — Acrílicos & Cia</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 8px; border-radius: 999px; border: none; cursor: pointer;
+    font-weight: 700; font-size: 13px; background: #e6ebf3; color: var(--muted);
+  }
+  .tab svg { width: 15px; height: 15px; }
+  .tab.active { background: var(--navy); color: #fff; }
+
+  .pay-card { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 20px; }
+  .expire-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .expire-row__label { font-size: 13px; color: var(--muted); }
+  .expire-row__value { font-size: 19px; font-weight: 800; color: #e0342f; font-variant-numeric: tabular-nums; }
+
+  .qr-wrap {
+    background: #f4f7fb; border-radius: var(--radius-md); padding: 16px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+  }
+  .qr-wrap img { width: 190px; height: 190px; display: block; }
+
+  .qr-hint { text-align: center; font-size: 12.5px; color: var(--muted); margin: 0 0 18px; }
+
+  .pix-code-row {
+    display: flex; align-items: center; gap: 10px; background: #f4f7fb; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 16px;
+  }
+  .pix-code-text {
+    flex: 1; font-size: 11px; color: var(--muted); word-break: break-all; line-height: 1.4;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+  }
+  .pix-copy-icon {
+    border: none; background: #fff; border-radius: 8px; width: 32px; height: 32px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; color: var(--navy); cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .pix-copy-icon svg { width: 15px; height: 15px; }
+
+  .copy-btn {
+    width: 100%; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .copy-btn.copied { background: var(--green); }
+
+  .card-form { display: none; flex-direction: column; gap: 12px; }
+  .card-form.active { display: flex; }
+  .card-form input {
+    width: 100%; border: 1px solid var(--border); background: #f7f9fc; border-radius: var(--radius-sm);
+    padding: 12px; font-size: 14px; font-family: inherit;
+  }
+  .card-form .row { display: flex; gap: 10px; }
+  .card-form .row input { flex: 1; }
+
+  .help-title { font-size: 13px; font-weight: 700; text-align: center; margin: 26px 0 12px; color: var(--text); }
+  .help-row { display: flex; gap: 10px; }
+  .help-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--card); box-shadow: var(--shadow); border-radius: var(--radius-md);
+    padding: 12px; font-size: 12.5px; font-weight: 700; color: var(--text); text-decoration: none;
+  }
+  .help-btn svg { width: 15px; height: 15px; color: var(--navy); }
+
+  .pix-tab-content, .card-tab-content { display: none; }
+  .pix-tab-content.active, .card-tab-content.active { display: block; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="topbar">
+    <div class="topbar__icon">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 8a2 2 0 012-2h1.5l1-1.5h7l1 1.5H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" stroke="#fff" stroke-width="1.8"/></svg>
+    </div>
+    <div>
+      <div class="topbar__title">Acrílicos &amp; Cia</div>
+      <div class="topbar__subtitle">Revelação &amp; Impressão Rápida</div>
+    </div>
+  </header>
+
+  <nav class="stepper" aria-label="Progresso do pedido">
+    <div class="step-dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step-dash done"></div>
+    <div class="step-dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step-dash done"></div>
+    <div class="step-dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step-dash done"></div>
+    <div class="step-pill"><span class="step-dot">4</span>Pagar</div>
+  </nav>
+
+  <main class="content">
+    <div class="tabs">
+      <button class="tab active" id="tabPix" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l3.5 3.5L12 10 8.5 6.5 12 3zM12 14l3.5 3.5L12 21l-3.5-3.5L12 14zM3 12l3.5-3.5L10 12l-3.5 3.5L3 12zM14 12l3.5-3.5L21 12l-3.5 3.5L14 12z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Pix Instantâneo
+      </button>
+      <button class="tab" id="tabCard" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg>
+        Cartão de Crédito
+      </button>
+    </div>
+
+    <div class="pay-card">
+      <div class="pix-tab-content active" id="pixContent">
+        <div class="expire-row">
+          <span class="expire-row__label">Expira em:</span>
+          <span class="expire-row__value" id="expireValue">15:00</span>
+        </div>
+
+        <div class="qr-wrap">
+          <img id="qrImg" alt="QR Code Pix">
+        </div>
+        <p class="qr-hint">Abra o app do banco &gt; Ler QR Code</p>
+
+        <div class="pix-code-row">
+          <div class="pix-code-text" id="pixCodeText"></div>
+          <button class="pix-copy-icon" id="pixCopyIcon" type="button">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+        </div>
+
+        <button class="btn btn-primary copy-btn" id="copyPixBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><rect x="8" y="8" width="12" height="12" rx="2" stroke="#fff" stroke-width="1.8"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="1.8"/></svg>
+          <span id="copyPixLabel">Copiar Código Pix</span>
+        </button>
+      </div>
+
+      <div class="card-tab-content" id="cardContent">
+        <form class="card-form active" id="cardForm">
+          <input type="text" placeholder="Número do cartão" maxlength="19" inputmode="numeric">
+          <input type="text" placeholder="Nome impresso no cartão">
+          <div class="row">
+            <input type="text" placeholder="MM/AA" maxlength="5">
+            <input type="text" placeholder="CVV" maxlength="4" inputmode="numeric">
+          </div>
+          <button class="btn btn-primary" type="submit" style="margin-top:6px;">
+            Pagar <span id="cardTotal">R$ 0,00</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <p class="help-title">Precisa de Ajuda?</p>
+    <div class="help-row">
+      <a class="help-btn" href="tel:+5563999121882">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4-2 1.5a12 12 0 006 6l1.5-2 4 1.5v3a2 2 0 01-2 2C10.5 20 4 13.5 4 5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        (63) 99912-1882
+      </a>
+      <a class="help-btn" href="mailto:email@gmail.com">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 6.5l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        E-mail
+      </a>
+    </div>
+  </main>
+
+  <p class="footer-store">
+    QR FOTO STUDIO • CNPJ 24.138.227/0001-66<br>
+    Terminal Kiosk ID: AJU-SHOPPING-04 • v2.4.8
+  </p>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const cart = AC.getCart();
+  if (cart.length === 0) AC.goto('4-carrinho.html');
+  const total = AC.cartTotal(cart);
+  document.getElementById('cardTotal').textContent = AC.fmt(total);
+
+  // Monta um payload Pix "copia e cola" fictício com base no pedido
+  function buildPixCode() {
+    const amount = total.toFixed(2);
+    const orderId = AC.uid().toUpperCase();
+    return `00020126580014br.gov.bcb.pix0136qrfoto-studio-${orderId}5204000053039865406${amount}5802BR5925QR FOTO STUDIO ATELIER6009ARACAJU62070503***63045E8A2`;
+  }
+  const pixCode = buildPixCode();
+  document.getElementById('pixCodeText').textContent = pixCode;
+  document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(pixCode);
+
+  function copyPix() {
+    navigator.clipboard.writeText(pixCode).then(() => {
+      const label = document.getElementById('copyPixLabel');
+      const btn = document.getElementById('copyPixBtn');
+      label.textContent = 'Código Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { label.textContent = 'Copiar Código Pix'; btn.classList.remove('copied'); }, 2200);
+    });
+  }
+  document.getElementById('copyPixBtn').addEventListener('click', copyPix);
+  document.getElementById('pixCopyIcon').addEventListener('click', copyPix);
+
+  // Countdown de expiração
+  let secondsLeft = 15 * 60;
+  function tick() {
+    const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
+    const s = (secondsLeft % 60).toString().padStart(2, '0');
+    document.getElementById('expireValue').textContent = `${m}:${s}`;
+    if (secondsLeft <= 0) { clearInterval(timerRef); document.getElementById('expireValue').textContent = 'Expirado'; }
+    secondsLeft--;
+  }
+  tick();
+  const timerRef = setInterval(tick, 1000);
+
+  // Alternância de abas
+  const tabPix = document.getElementById('tabPix');
+  const tabCard = document.getElementById('tabCard');
+  tabPix.addEventListener('click', () => {
+    tabPix.classList.add('active'); tabCard.classList.remove('active');
+    document.getElementById('pixContent').classList.add('active');
+    document.getElementById('cardContent').classList.remove('active');
+  });
+  tabCard.addEventListener('click', () => {
+    tabCard.classList.add('active'); tabPix.classList.remove('active');
+    document.getElementById('cardContent').classList.add('active');
+    document.getElementById('pixContent').classList.remove('active');
+  });
+
+  document.getElementById('cardForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Pagamento simulado com sucesso! Obrigado pela compra.');
+  });
+</script>
+</body>
+</html>

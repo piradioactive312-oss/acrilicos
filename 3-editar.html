@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editar & Legendas — Acrílicos & Cia</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .preview-card {
+    background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+    padding: 14px; margin-bottom: 16px;
+  }
+  .preview-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .preview-nav__label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .preview-nav__arrows { display: flex; gap: 6px; }
+  .preview-photo-wrap {
+    position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 4/3.1; background: #111;
+  }
+  .preview-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .preview-photo-wrap img.f-pb { filter: grayscale(1) contrast(1.05); }
+  .preview-photo-wrap img.f-vintage { filter: sepia(0.45) saturate(1.3) contrast(0.95) brightness(1.02); }
+  .caption-overlay {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 14px 14px;
+    background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+    text-align: center; color: #fff;
+  }
+  .caption-overlay__main { font-size: 17px; margin: 0; font-family: 'Segoe Script', 'Brush Script MT', cursive; }
+  .caption-overlay__main.font-moderna { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.3px; }
+  .caption-overlay__main.font-vintage { font-family: Georgia, serif; font-style: italic; }
+  .caption-overlay__sub { font-size: 9.5px; letter-spacing: 1.5px; opacity: 0.85; margin-top: 4px; }
+  .caption-hint { text-align: center; font-size: 12px; color: var(--blue); margin: 10px 0 0; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  .field-card { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 16px; }
+  .field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .field-head h2 { font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .char-count { font-size: 11.5px; color: var(--muted); }
+  .caption-input-wrap { position: relative; margin-bottom: 18px; }
+  .caption-input {
+    width: 100%; border: 1px solid var(--border); background: #f7f9fc; border-radius: var(--radius-sm);
+    padding: 12px 36px 12px 12px; font-size: 14px; font-family: inherit; color: var(--text);
+  }
+  .caption-clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none;
+    color: #c3cad6; cursor: pointer; width: 22px; height: 22px;
+  }
+
+  .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: var(--muted); text-transform: uppercase; margin: 0 0 10px; }
+  .option-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  .font-opt {
+    flex: 1; padding: 10px 8px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+    background: #fff; font-size: 13.5px; font-weight: 600; text-align: center; cursor: pointer; color: var(--text);
+  }
+  .font-opt[data-font="Cursiva"] { font-family: 'Segoe Script', 'Brush Script MT', cursive; }
+  .font-opt[data-font="Vintage"] { font-family: Georgia, serif; font-style: italic; }
+  .font-opt.active { border-color: var(--green); background: var(--green-soft); color: #0f5132; }
+
+  .swatch-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .swatch {
+    width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .swatch svg { width: 13px; height: 13px; color: #fff; opacity: 0; }
+  .swatch.active svg { opacity: 1; }
+
+  .filter-row { display: flex; gap: 8px; }
+  .filter-opt {
+    flex: 1; padding: 9px 6px; border-radius: 999px; border: 1.5px solid var(--border); background: #fff;
+    font-size: 12px; font-weight: 600; text-align: center; cursor: pointer; color: var(--text);
+    display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap;
+  }
+  .filter-opt svg { width: 13px; height: 13px; }
+  .filter-opt.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+
+  .bottom-bar .btn-link { margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="topbar">
+    <div class="topbar__icon">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 8a2 2 0 012-2h1.5l1-1.5h7l1 1.5H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" stroke="#fff" stroke-width="1.8"/></svg>
+    </div>
+    <div>
+      <div class="topbar__title">Acrílicos &amp; Cia</div>
+      <div class="topbar__subtitle">Revelação &amp; Impressão Rápida</div>
+    </div>
+  </header>
+
+  <nav class="stepper" aria-label="Progresso do pedido">
+    <div class="step-dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step-dash done"></div>
+    <div class="step-dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step-dash done"></div>
+    <div class="step-pill"><span class="step-dot">3</span>Editar</div>
+    <div class="step-dash"></div>
+    <div class="step-dot">4</div>
+  </nav>
+
+  <main class="content">
+    <div class="preview-card">
+      <div class="preview-nav">
+        <span class="preview-nav__label" id="photoLabel">Foto 1 de 1</span>
+        <div class="preview-nav__arrows">
+          <button class="icon-btn" id="prevBtn" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="icon-btn" id="nextPhotoBtn" type="button"><svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+      <div class="preview-photo-wrap">
+        <img id="previewImg" alt="Prévia da foto">
+        <div class="caption-overlay">
+          <p class="caption-overlay__main" id="captionMain">Sua legenda aqui</p>
+          <div class="caption-overlay__sub">QR FOTO STUDIO ATELIER</div>
+        </div>
+      </div>
+      <p class="caption-hint">
+        <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M7 20h10M12 4l7 7-9 9H6v-4l9-9z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Toque no texto abaixo para customizar a legenda
+      </p>
+    </div>
+
+    <div class="field-card">
+      <div class="field-head">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" width="17" height="17" style="color:var(--navy)"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Legenda Personalizada
+        </h2>
+        <span class="char-count" id="charCount">0/45</span>
+      </div>
+
+      <div class="caption-input-wrap">
+        <input class="caption-input" id="captionInput" maxlength="45" placeholder="Escreva uma legenda para esta foto">
+        <button class="caption-clear" id="clearCaption" type="button">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <p class="field-label">Estilo da Fonte</p>
+      <div class="option-row" id="fontRow">
+        <div class="font-opt" data-font="Cursiva">Cursiva</div>
+        <div class="font-opt" data-font="Moderna">Moderna</div>
+        <div class="font-opt" data-font="Vintage">Vintage</div>
+      </div>
+
+      <p class="field-label">Cor do Texto</p>
+      <div class="swatch-row" id="swatchRow">
+        <button class="swatch" data-color="#14315c" style="background:#14315c"><svg viewBox="0 0 24 24" fill="none"></svg></button>
+        <button class="swatch" data-color="#8a94a3" style="background:#8a94a3"><svg viewBox="0 0 24 24" fill="none"></svg></button>
+        <button class="swatch" data-color="#c8722e" style="background:#c8722e"><svg viewBox="0 0 24 24" fill="none"></svg></button>
+      </div>
+
+      <p class="field-label">Filtro Rápido</p>
+      <div class="filter-row" id="filterRow">
+        <div class="filter-opt" data-filter="Normal">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/></svg>
+          Normal
+        </div>
+        <div class="filter-opt" data-filter="P&B Clássico">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/></svg>
+          P&amp;B Clássico
+        </div>
+        <div class="filter-opt" data-filter="Vintage Cálido">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Vintage Cálido
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="bottom-bar">
+    <button class="btn btn-primary" id="advanceBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M6 2l1 3M15 2l-1 3M4 8h16l-1.4 10.5A2 2 0 0116.6 20H7.4a2 2 0 01-2-1.5L4 8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      Avançar para o Carrinho
+    </button>
+    <button class="btn btn-link" id="saveMoreBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Salvar e Adicionar Mais Fotos
+    </button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const checkSvg = '<path d="M5 12.5L9.5 17L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  document.querySelectorAll('.swatch svg').forEach(s => s.innerHTML = checkSvg);
+
+  let size = AC.getSize() || SIZES.find(s => s.id === '7x10');
+  let queue = AC.getQueue();
+  if (queue.length === 0) AC.goto('2-upload.html');
+
+  let idx = 0;
+
+  function currentPhoto() { return queue[idx]; }
+
+  function render() {
+    const p = currentPhoto();
+    if (!p) return;
+    document.getElementById('photoLabel').textContent = `Foto ${idx + 1} de ${queue.length}`;
+    document.getElementById('prevBtn').disabled = idx === 0;
+    document.getElementById('nextPhotoBtn').disabled = idx === queue.length - 1;
+
+    const img = document.getElementById('previewImg');
+    img.src = p.dataURL;
+    img.style.transform = `rotate(${p.rotation || 0}deg)`;
+    img.className = p.filter === 'P&B Clássico' ? 'f-pb' : (p.filter === 'Vintage Cálido' ? 'f-vintage' : '');
+
+    const cap = document.getElementById('captionInput');
+    cap.value = p.caption || '';
+    document.getElementById('charCount').textContent = `${cap.value.length}/45`;
+
+    const captionMain = document.getElementById('captionMain');
+    captionMain.textContent = p.caption || 'Sua legenda aqui';
+    captionMain.style.color = p.color || '#ffffff';
+    captionMain.className = 'caption-overlay__main ' + (p.font === 'Moderna' ? 'font-moderna' : p.font === 'Vintage' ? 'font-vintage' : '');
+
+    document.querySelectorAll('.font-opt').forEach(el => el.classList.toggle('active', el.dataset.font === (p.font || 'Cursiva')));
+    document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('active', el.dataset.color === (p.color || '#14315c')));
+    document.querySelectorAll('.filter-opt').forEach(el => el.classList.toggle('active', el.dataset.filter === (p.filter || 'Normal')));
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+  document.getElementById('nextPhotoBtn').addEventListener('click', () => { if (idx < queue.length - 1) { idx++; render(); } });
+
+  document.getElementById('captionInput').addEventListener('input', (e) => {
+    currentPhoto().caption = e.target.value;
+    document.getElementById('charCount').textContent = `${e.target.value.length}/45`;
+    document.getElementById('captionMain').textContent = e.target.value || 'Sua legenda aqui';
+    AC.setQueue(queue);
+  });
+
+  document.getElementById('clearCaption').addEventListener('click', () => {
+    currentPhoto().caption = '';
+    render();
+    AC.setQueue(queue);
+  });
+
+  document.getElementById('fontRow').addEventListener('click', (e) => {
+    const opt = e.target.closest('.font-opt');
+    if (!opt) return;
+    currentPhoto().font = opt.dataset.font;
+    render();
+    AC.setQueue(queue);
+  });
+
+  document.getElementById('swatchRow').addEventListener('click', (e) => {
+    const opt = e.target.closest('.swatch');
+    if (!opt) return;
+    currentPhoto().color = opt.dataset.color;
+    render();
+    AC.setQueue(queue);
+  });
+
+  document.getElementById('filterRow').addEventListener('click', (e) => {
+    const opt = e.target.closest('.filter-opt');
+    if (!opt) return;
+    currentPhoto().filter = opt.dataset.filter;
+    render();
+    AC.setQueue(queue);
+  });
+
+  document.getElementById('saveMoreBtn').addEventListener('click', () => {
+    AC.setQueue(queue);
+    AC.goto('2-upload.html');
+  });
+
+  document.getElementById('advanceBtn').addEventListener('click', () => {
+    const cart = AC.getCart();
+    queue.forEach(p => {
+      cart.push({
+        id: AC.uid(),
+        sizeId: size.id,
+        sizeName: size.name,
+        sizeDesc: size.desc,
+        unitPrice: size.price,
+        qty: p.qty,
+        dataURL: p.dataURL,
+        rotation: p.rotation || 0,
+        caption: p.caption || '',
+        font: p.font || 'Cursiva',
+        color: p.color || '#14315c',
+        filter: p.filter || 'Normal',
+      });
+    });
+    AC.setCart(cart);
+    AC.clearQueue();
+    AC.goto('4-carrinho.html');
+  });
+
+  render();
+</script>
+</body>
+</html>

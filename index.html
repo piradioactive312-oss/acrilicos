@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escolha o Tamanho — Acrílicos & Cia</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .size-list { display: flex; flex-direction: column; gap: 10px; }
+  .size-row {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow); padding: 14px 16px;
+    cursor: pointer; border: 1px solid transparent;
+    transition: border-color .15s ease, transform .12s ease;
+  }
+  .size-row:active { transform: scale(0.99); }
+  .size-row:hover { border-color: #d7e2f7; }
+  .size-row__icon {
+    width: 42px; height: 42px; border-radius: 12px; background: var(--blue-soft);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .size-row__icon svg { width: 20px; height: 20px; color: var(--navy); }
+  .size-row__body { flex: 1; min-width: 0; }
+  .size-row__name { font-size: 15px; font-weight: 700; }
+  .size-row__desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .size-row__meta { text-align: right; flex-shrink: 0; }
+  .size-row__price { color: var(--green); font-weight: 800; font-size: 15px; }
+  .size-row__tag { font-size: 10.5px; color: #9aa4b2; margin-top: 3px; }
+  .title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="topbar">
+    <div class="topbar__icon">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 8a2 2 0 012-2h1.5l1-1.5h7l1 1.5H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" stroke="#fff" stroke-width="1.8"/></svg>
+    </div>
+    <div>
+      <div class="topbar__title">Acrílicos &amp; Cia</div>
+      <div class="topbar__subtitle">Revelação &amp; Impressão Rápida</div>
+    </div>
+  </header>
+
+  <nav class="stepper" aria-label="Progresso do pedido">
+    <div class="step-pill"><span class="step-dot">1</span>Escolha</div>
+    <div class="step-dash"></div>
+    <div class="step-dot">2</div>
+    <div class="step-dash"></div>
+    <div class="step-dot far">3</div>
+    <div class="step-dash"></div>
+    <div class="step-dot farther">4</div>
+  </nav>
+
+  <main class="content">
+    <div class="title-row">
+      <div>
+        <h1 class="section-title">Escolha o Tamanho</h1>
+        <p class="section-sub">Selecione a proporção ideal para revelar suas fotos.</p>
+      </div>
+    </div>
+
+    <div class="size-list" id="sizeList"></div>
+  </main>
+
+  <p class="footer-store">
+    (63) 99999-9999<br>
+    email@gmail.com<br><br>
+    CNPJ: 24.138.227/0001-66<br>
+    Acrílicos e Cia • Revelação Instantânea Inteligente
+  </p>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const list = document.getElementById('sizeList');
+  list.innerHTML = SIZES.map(s => `
+    <div class="size-row" data-id="${s.id}">
+      <div class="size-row__icon">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M4 16l4.5-4.5a1.5 1.5 0 012.1 0L14 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div class="size-row__body">
+        <div class="size-row__name">${s.name}</div>
+        <div class="size-row__desc">${s.desc}</div>
+      </div>
+      <div class="size-row__meta">
+        <div class="size-row__price">${AC.fmt(s.price)}</div>
+        <div class="size-row__tag">${s.tag}</div>
+      </div>
+    </div>
+  `).join('');
+
+  list.addEventListener('click', (e) => {
+    const row = e.target.closest('.size-row');
+    if (!row) return;
+    const size = SIZES.find(s => s.id === row.dataset.id);
+    AC.setSize(size);
+    // Trocar de formato não deve perder fotos já editadas do mesmo formato
+    AC.goto('2-upload.html');
+  });
+</script>
+</body>
+</html>
